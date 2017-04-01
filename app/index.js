@@ -30,7 +30,7 @@ client.on('registered', () => {
 
 client.on('message', (e) => {
     commands.map(command => {
-        if(e.message.match(command.regex)) {
+        if(e.message.match(command.regex) && e.message.indexOf(command.regex) === 0) {
             command.action(e);
         }
     })
