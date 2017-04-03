@@ -138,7 +138,7 @@ const commands = [
             event.reply(`A reminder has been set. Will remind you in ${days}d, ${hours}h, ${mins}m, ${seconds}s`)
 
             let rememberDateKey = new Date(dateToRemember);
-            let currentKey = rememberDateKey.getMonth() + '-' +  rememberDateKey.getMonth() + '-' + rememberDateKey.getHours() + '-' + rememberDateKey.getMinutes() + '-' + rememberDateKey.getSeconds();
+            let currentKey = rememberDateKey.getMonth() + '-' +  rememberDateKey.getDate() + '-' + rememberDateKey.getHours() + '-' + rememberDateKey.getMinutes() + '-' + rememberDateKey.getSeconds();
             storeDate(currentKey, nick, msg, channel);
         }
 
