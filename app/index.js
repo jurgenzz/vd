@@ -4,6 +4,8 @@ const config = require('./config');
 
 const client = new irc.Client();
 
+let connectionTime;
+
 client.connect({
     host: config.host,
     port: config.port,
@@ -22,6 +24,7 @@ client.on('close', () => {
 });
 
 client.on('registered', () => {
+    connectionTime = new Date()
     config.channels.map(channel => {
         console.log(`Joining ${channel}`);
         client.join(channel);
@@ -31,7 +34,7 @@ client.on('registered', () => {
 client.on('message', (e) => {
     commands.map(command => {
         if(e.message.match(command.regex) && e.message.indexOf(command.regex) === 0) {
-            command.action(e);
+            command.action(e, {connectionTime: connectionTime});
         }
     })
 })

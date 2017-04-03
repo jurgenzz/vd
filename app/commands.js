@@ -1,6 +1,6 @@
 const vdLib = require('./vd.json')
 const vdExd = require('./vd_exd.json');
-const getDate = require('./helpers');
+const {getDate, humanizeDelta} = require('./helpers');
 
 
 const commands = [
@@ -44,7 +44,15 @@ const commands = [
     {
         regex: '!ping',
         action: (event) => {
-             event.reply('pong');
+            event.reply('pong');
+        }
+    },
+    {
+        regex: '!uptime',
+        action: (event, {connectionTime}) => {
+            const now = new Date()
+            let timeUp = humanizeDelta(now - connectionTime);
+            event.reply(timeUp);
         }
     }
 
