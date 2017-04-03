@@ -1,10 +1,27 @@
 const irc = require('irc-framework');
 const commands = require('./commands');
 const config = require('./config');
-
+const {checkIfExists, removeFromMemory} = require('./helpers');
 const client = new irc.Client();
 
 let connectionTime;
+let currentChannels = {};
+
+const messageCheck = () => {
+    setInterval(() => {
+        let rememberDateKey = new Date();
+        let currentKey = rememberDateKey.getMonth() + '-' +  rememberDateKey.getMonth() + '-' + rememberDateKey.getHours() + '-' + rememberDateKey.getMinutes() + '-' + rememberDateKey.getSeconds();
+
+        let reply = checkIfExists(currentKey);
+        if (reply) {
+            let currentClient = currentChannels[reply.channel];
+            if (currentClient) {
+                currentClient.say(`${reply.nick}, a reminder for you: '${reply.message}'`);
+                removeFromMemory(currentKey);
+            }
+        }
+    }, 1)
+}
 
 client.connect({
     host: config.host,
@@ -26,9 +43,12 @@ client.on('close', () => {
 client.on('registered', () => {
     connectionTime = new Date()
     config.channels.map(channel => {
+        let currentChannel = client.channel(channel);
+        currentChannels[channel] = currentChannel;
         console.log(`Joining ${channel}`);
-        client.join(channel);
+        currentChannel.join();
     })
+    messageCheck()
 });
 
 client.on('message', (e) => {
