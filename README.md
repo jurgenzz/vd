@@ -26,6 +26,7 @@ Commands:
 !vd // returns name days today
 !vd name // returns which date "name" has a nameday
 !ping // pong
+!remind $time $message // e.g. !remind 1d2h3m4s remind me to get milk
 ```
 
 For more commands, add an object to `app/commands.js`, containing regex, that should match your commant and action,
