@@ -5,7 +5,7 @@ Usage:
 ```
 npm install
 ```
-create app/config.js:
+create app/config.json:
 ```
 {
     "host": "", //irc host, e.g. chat.freenode.net

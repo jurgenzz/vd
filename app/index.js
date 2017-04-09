@@ -23,8 +23,6 @@ const messageCheck = () => {
     }, 1)
 }
 
-console.log('test');
-
 client.connect({
     host: config.host,
     port: config.port,
