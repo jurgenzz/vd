@@ -69,7 +69,10 @@ const commands = [
             let timeStamp = event.message.split(' ')[1] // returns 7d4h, 7d, 1d, 2w,
             msg = msg.replace(/!remind/g, '').replace(timeStamp, '').replace(/\s+/, '');
             // days / week / hour / match
-            time = timeStamp.match(/\d+\w/g);
+            let time;
+            if (timeStamp) {
+                time = timeStamp.match(/\d+\w/g);
+            }
             let weeks = 0;
             let days = 0;
             let hours = 0;
