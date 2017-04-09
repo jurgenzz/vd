@@ -2,6 +2,8 @@ const vdLib = require('./vd.json')
 const vdExd = require('./vd_exd.json');
 const {getDate, humanizeDelta, createDateToRemember, storeDate} = require('./helpers');
 
+const BOLD_CHAR = '\u0002'
+
 
 const commands = [
     {
@@ -31,12 +33,14 @@ const commands = [
                     event.reply(`${name} nesvin.`)
                 }
             } else {
-                if (msg[1] === 'full') {
-                    let vdExdended = vdExd[shortDate].join(', ');
-                    event.reply(`Vārda dienu šodien, ${longDate}, svin ${vdList}, kā arī ${vdExdended}.`);
-                } else {
-                    event.reply(`Vārda dienu šodien, ${longDate}, svin ${vdList}.`);
-                }
+                let vdExdended = vdExd[shortDate].join(', ');
+                event.reply(`Vārda dienu šodien, ${longDate}, svin ${BOLD_CHAR + vdList + BOLD_CHAR}, kā arī ${vdExdended}.`);
+                // return;
+                // if (msg[1] === 'full') {
+                //
+                // } else {
+                //     event.reply(`Vārda dienu šodien, ${longDate}, svin ${vdList}.`);
+                // }
             }
 
         }

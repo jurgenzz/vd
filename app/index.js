@@ -10,7 +10,7 @@ let currentChannels = {};
 const messageCheck = () => {
     setInterval(() => {
         let rememberDateKey = new Date();
-        let currentKey = rememberDateKey.getMonth() + '-' +  rememberDateKey.getMonth() + '-' + rememberDateKey.getHours() + '-' + rememberDateKey.getMinutes() + '-' + rememberDateKey.getSeconds();
+        let currentKey = rememberDateKey.getMonth() + '-' +  rememberDateKey.getDate() + '-' + rememberDateKey.getHours() + '-' + rememberDateKey.getMinutes() + '-' + rememberDateKey.getSeconds();
 
         let reply = checkIfExists(currentKey);
         if (reply) {
@@ -22,6 +22,8 @@ const messageCheck = () => {
         }
     }, 1)
 }
+
+console.log('test');
 
 client.connect({
     host: config.host,
@@ -42,6 +44,7 @@ client.on('close', () => {
 
 client.on('registered', () => {
     connectionTime = new Date()
+    console.log('hehe')
     config.channels.map(channel => {
         let currentChannel = client.channel(channel);
         currentChannels[channel] = currentChannel;
