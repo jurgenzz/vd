@@ -1,7 +1,7 @@
 const irc = require('irc-framework');
 const commands = require('./commands');
 const config = require('./config');
-const {checkIfExists, removeFromMemory} = require('./helpers');
+const {checkIfExists, removeFromMemory, hypheniphyDate} = require('./helpers');
 const client = new irc.Client();
 
 let connectionTime;
@@ -10,7 +10,7 @@ let currentChannels = {};
 const messageCheck = () => {
     setInterval(() => {
         let rememberDateKey = new Date();
-        let currentKey = rememberDateKey.getMonth() + '-' +  rememberDateKey.getDate() + '-' + rememberDateKey.getHours() + '-' + rememberDateKey.getMinutes() + '-' + rememberDateKey.getSeconds();
+        let currentKey = hypheniphyDate(rememberDateKey);
 
         let reply = checkIfExists(currentKey);
         if (reply) {

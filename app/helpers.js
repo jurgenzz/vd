@@ -1,9 +1,7 @@
 const _ = require('lodash');
-const moment = require('moment');
 const fs = require('fs');
 const reminders = require('../temp/reminders');
 const monthNames = ['janvārī', 'februārī', 'martā', 'aprīlī', 'maijā', 'jūnijā', 'jūlijā', 'augustā', 'septembrī', 'oktobrī', 'novembrī', 'decembrī'];
-
 
 const getDate = () => {
     let current = new Date();
@@ -22,24 +20,24 @@ const getDate = () => {
     }
 }
 
+const DURATION_MAPPING = {
+    y: 60 * 60 * 24 * 365,
+    // mn: 60 * 60 * 24 * 30,
+    w: 60 * 60 * 24 * 7,
+    d: 60 * 60 * 24,
+    h: 60 * 60,
+    m: 60,
+    s: 1,
+}
+
 const humanizeDelta = (delta) => {
     // Turns `12345678` into `3h 25m 45s`.
-
-    const DURATION_MAPPING = {
-        y: 1000 * 60 * 60 * 24 * 365,
-        // mn: 1000 * 60 * 60 * 24 * 30,
-        // w: 1000 * 60 * 60 * 24 * 7,
-        d: 1000 * 60 * 60 * 24,
-        h: 1000 * 60 * 60,
-        m: 1000 * 60,
-        s: 1000,
-        // ms: 1,
-    }
 
     let d = delta
     let durations = []
     _.forEach(DURATION_MAPPING, (duration, durationKey) => {
         if (duration <= d) {
+            duration *= 1000
             let count = _.floor(d / duration)
 
             d -= duration * count
@@ -49,11 +47,6 @@ const humanizeDelta = (delta) => {
     })
 
     return _.join(_.map(durations, ([name, count]) => `${count}${name}`), ' ')
-}
-
-const createDateToRemember = ({days, hours, mins, seconds}) => {
-    let dateToRemember = moment().add({days: days, minutes: mins, hours: hours, seconds:seconds})
-    return dateToRemember.valueOf();
 }
 
 const storeDate = (date, nick, message, channel) => {
@@ -76,11 +69,20 @@ const removeFromMemory = (date) => {
     fs.writeFile('temp/reminders.json', JSON.stringify(newReminders));
 }
 
+const hypheniphyDate = (date) => {
+    return _.join(
+                _.map(
+                    ['getMonth', 'getDate', 'getHours', 'getMinutes', 'getSeconds'],
+                    m => date[m]()
+                ), '-')
+}
+
 module.exports = {
     humanizeDelta,
     getDate,
-    createDateToRemember,
     storeDate,
     removeFromMemory,
-    checkIfExists
+    checkIfExists,
+    hypheniphyDate,
+    DURATION_MAPPING
 }
