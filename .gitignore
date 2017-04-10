@@ -1,4 +1,4 @@
 node_modules
-app/config.json
 npm-debug.log
-temp/reminders.json
+app/config.json
+temp/*
