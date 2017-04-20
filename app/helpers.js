@@ -41,8 +41,9 @@ const humanizeDelta = (delta) => {
             let count = _.floor(d / duration)
 
             d -= duration * count
-
-            durations.push([durationKey, count])
+            if (count) {
+                durations.push([durationKey, count])
+            }
         }
     })
 
