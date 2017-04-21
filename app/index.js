@@ -6,11 +6,28 @@ const client = new irc.Client();
 
 let connectionTime;
 let currentChannels = {};
-
+let vdPrinted = false;
 const messageCheck = () => {
     setInterval(() => {
         let rememberDateKey = new Date();
         let currentKey = hypheniphyDate(rememberDateKey);
+
+        console.log(currentKey);
+
+        let shouldPrintVd = currentKey.split('-').splice(2, 3).join('-');
+
+        console.log(shouldPrintVd);
+
+        if (shouldPrintVd === '0-0-0') {
+            if (!vdPrinted) {
+                vdPrinted = true;
+                if (currentChannels['#developerslv']) {
+                    commands[0].action(false, currentChannels['#developerslv']);
+                }
+            }
+        } else {
+            vdPrinted = false;
+        }
 
         let reply = checkIfExists(currentKey);
         if (reply) {
