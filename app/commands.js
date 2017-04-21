@@ -9,11 +9,17 @@ const BOLD_CHAR = '\u0002'
 const commands = [
     {
         regex: '!vd',
-        action: (event) => {
+        action: (event, chan) => {
             let date = getDate();
             let shortDate = date.short;
             let longDate = date.full;
             let vdList = vdLib[shortDate].join(', ');
+            let vdExdended = vdExd[shortDate].join(', ');
+
+            if (chan) {
+                chan.say(`Vārda dienu šodien, ${longDate}, svin ${BOLD_CHAR + vdList + BOLD_CHAR}, kā arī ${vdExdended}.`);
+                return;
+            }
 
             let msg = event.message.split(' ');
 
@@ -33,14 +39,7 @@ const commands = [
                     event.reply(`${name} nesvin.`)
                 }
             } else {
-                let vdExdended = vdExd[shortDate].join(', ');
                 event.reply(`Vārda dienu šodien, ${longDate}, svin ${BOLD_CHAR + vdList + BOLD_CHAR}, kā arī ${vdExdended}.`);
-                // return;
-                // if (msg[1] === 'full') {
-                //
-                // } else {
-                //     event.reply(`Vārda dienu šodien, ${longDate}, svin ${vdList}.`);
-                // }
             }
 
         }
