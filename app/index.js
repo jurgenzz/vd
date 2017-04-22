@@ -12,17 +12,13 @@ const messageCheck = () => {
         let rememberDateKey = new Date();
         let currentKey = hypheniphyDate(rememberDateKey);
 
-        console.log(currentKey);
-
         let shouldPrintVd = currentKey.split('-').splice(2, 3).join('-');
-
-        console.log(shouldPrintVd);
 
         if (shouldPrintVd === '0-0-0') {
             if (!vdPrinted) {
                 vdPrinted = true;
                 if (currentChannels['#developerslv']) {
-                    commands[0].action(false, currentChannels['#developerslv']);
+                    commands[0].action(false, {chan: currentChannels['#developerslv']});
                 }
             }
         } else {
@@ -53,13 +49,13 @@ client.connect({
 });
 
 client.on('close', () => {
-  console.log('client.close called!');
+  le.log('client.close called!');
   process.exit(1);
 });
 
 client.on('registered', () => {
     connectionTime = new Date()
-    console.log('hehe')
+    // console.log('hehe')
     config.channels.map(channel => {
         let currentChannel = client.channel(channel);
         currentChannels[channel] = currentChannel;
