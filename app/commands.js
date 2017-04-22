@@ -9,7 +9,7 @@ const BOLD_CHAR = '\u0002'
 const commands = [
     {
         regex: '!vd',
-        action: (event, chan) => {
+        action: (event, {chan}) => {
             let date = getDate();
             let shortDate = date.short;
             let longDate = date.full;
