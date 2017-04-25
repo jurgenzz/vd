@@ -1,24 +1,23 @@
 const irc = require('irc-framework');
 const commands = require('./commands');
 const config = require('./config');
-const {checkIfExists, removeFromMemory, hypheniphyDate} = require('./helpers');
+const {checkIfExists, removeFromMemory, hypheniphyDate, nameDayAction} = require('./helpers');
 const client = new irc.Client();
+const defaultChannel = config.defaultChannel || '#meeseekeria';
 
 let connectionTime;
 let currentChannels = {};
 let vdPrinted = false;
 const messageCheck = () => {
     setInterval(() => {
-        let rememberDateKey = new Date();
-        let currentKey = hypheniphyDate(rememberDateKey);
 
-        let shouldPrintVd = currentKey.split('-').splice(2, 3).join('-');
+        let currentKey = hypheniphyDate(new Date());
 
-        if (shouldPrintVd === '0-0-0') {
+        if (currentKey.indexOf('21-22-0') >= 0) {
             if (!vdPrinted) {
                 vdPrinted = true;
-                if (currentChannels['#developerslv']) {
-                    commands[0].action(false, {chan: currentChannels['#developerslv']});
+                if (currentChannels[defaultChannel]) {
+                    nameDayAction(currentChannels[defaultChannel], 'say');
                 }
             }
         } else {
@@ -26,6 +25,7 @@ const messageCheck = () => {
         }
 
         let reply = checkIfExists(currentKey);
+
         if (reply) {
             let currentClient = currentChannels[reply.channel];
             if (currentClient) {

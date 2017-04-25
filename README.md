@@ -14,7 +14,8 @@ create app/config.json:
     "nick": "",
     "username": "",
     "password": "",
-    "channels": ["#meeseekeria"] // array of channels to join
+    "channels": ["#meeseekeria"] // array of channels to join,
+    "defaultChannel": "#meeseekeria"
 }
 ```
 then
@@ -30,7 +31,7 @@ Commands:
 ```
 
 For more commands, add an object to `app/commands.js`, containing regex, that should match your commant and action,
-that will be done if regex is matched: 
+that will be done if regex is matched:
 ```
     {
         regex: '!ping',
