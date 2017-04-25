@@ -2,46 +2,61 @@ const _ = require('lodash');
 const moment = require('moment');
 const vdLib = require('./vd.json')
 const vdExd = require('./vd_exd.json');
-const {getDate, humanizeDelta, storeDate, hypheniphyDate, DURATION_MAPPING} = require('./helpers');
+const {getDate, getFullDateName, humanizeDelta, storeDate, hypheniphyDate, DURATION_MAPPING} = require('./helpers');
 
 const BOLD_CHAR = '\u0002'
 
 const commands = [
     {
         regex: '!vd',
-        action: (event, {chan}) => {
-            let date = getDate();
-            let shortDate = date.short;
-            let longDate = date.full;
-            let vdList = vdLib[shortDate].join(', ');
-            let vdExdended = vdExd[shortDate].join(', ');
+        action: event => {
+            const param = event.message.replace(/^!vd\s?/, '')
 
-            if (chan) {
-                chan.say(`Vārda dienu šodien, ${longDate}, svin ${BOLD_CHAR + vdList + BOLD_CHAR}, kā arī ${vdExdended}.`);
-                return;
-            }
+            const datePattern = /(\d{1,2})[/-](\d{1,2})/
 
-            let msg = event.message.split(' ');
+            if (!param) {
+                let date = getDate()
+                const names = vdLib[date.short]
+                const extendedNames = vdExd[date.short]
 
-            if (msg.length === 2 && msg[1] !== 'full') {
-                let name = msg[1];
-                let nameFound = false;
-                Object.keys(vdLib).map(key => {
-                    if (vdLib[key].indexOf(name) >= 0 || vdExd[key] && vdExd[key].indexOf(name) >= 0) {
-                        let vdMonth = parseFloat(key.split('-')[0]);
-                        let vdDay = parseFloat(key.split('-')[1]);
-                        let monthName = date.monthNames[vdMonth - 1];
-                        event.reply(`${name} vārda dienu svin ${vdDay}. ${monthName}.`);
-                        nameFound = true;
-                    }
-                })
-                if (!nameFound) {
-                    event.reply(`${name} nesvin.`)
+                event.reply(
+                    `Vārda dienu šodien, ${date.full}, `
+                    + `svin ${BOLD_CHAR + names.join(', ') + BOLD_CHAR}, `
+                    + `kā arī ${extendedNames.join(', ')}.`
+                )
+            } else if (datePattern.test(param)) {
+                let [input, month, day] = param.match(datePattern)
+                month = _.padStart(month, 2, '0')
+                day = _.padStart(day, 2, '0')
+
+                const key = `${month}-${day}`
+
+                const names = vdLib[key]
+                const extendedNames = vdExd[key]
+                if (!names || !extendedNames) {
+                    return
                 }
-            } else {
-                event.reply(`Vārda dienu šodien, ${longDate}, svin ${BOLD_CHAR + vdList + BOLD_CHAR}, kā arī ${vdExdended}.`);
-            }
 
+                event.reply(
+                    `Vārda dienu ${getFullDateName(month, day)} `
+                    + `svin ${BOLD_CHAR + names.join(', ') + BOLD_CHAR}, `
+                    + `kā arī ${extendedNames.join(', ')}.`
+                )
+            } else {
+                const key = _.findKey(vdLib, s => s.indexOf(param) !== -1)
+                const extendedKey = key ? null : _.findKey(vdExd, s => s.indexOf(param) !== -1)
+
+                if (!key && !extendedKey) {
+                    event.reply(`${param} nesvin.`)
+                    return
+                }
+
+                let [month, day] = (key || extendedNames).split('-')
+                month = +month
+                day = +day
+
+                event.reply(`${param} vārda dienu svin ${getFullDateName(month, day)}.`);
+            }
         }
     },
     {
@@ -61,7 +76,6 @@ const commands = [
     {
         regex: '!remind',
         action: (event) => {
-            console.log(event);
             let msg = event.message
             let nick = event.nick
             let channel = event.target
