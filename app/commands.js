@@ -1,11 +1,12 @@
 const _ = require('lodash');
 const moment = require('moment');
-const {humanizeDelta, storeDate, hypheniphyDate, DURATION_MAPPING, nameDayAction} = require('./helpers');
+const {humanizeDelta, storeDate, hypheniphyDate, DURATION_MAPPING} = require('./helpers');
+const {vdCheckUp} = require('./vdCheckUp');
 
 const commands = [
     {
         regex: '!vd',
-        action: event => nameDayAction(event, 'reply')
+        action: event => vdCheckUp(event, 'reply')
     },
     {
         regex: '!ping',
