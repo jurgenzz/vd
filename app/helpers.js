@@ -1,6 +1,13 @@
 const _ = require('lodash');
 const fs = require('fs');
-const reminders = require('../temp/reminders');
+
+let reminders = {}
+try {
+    reminders = require('../temp/reminders')
+} catch (err) {
+    console.log('WARNING: Could not find temp/reminders')
+}
+
 const monthNames = ['janvārī', 'februārī', 'martā', 'aprīlī', 'maijā', 'jūnijā', 'jūlijā', 'augustā', 'septembrī', 'oktobrī', 'novembrī', 'decembrī'];
 
 const getDate = () => {
