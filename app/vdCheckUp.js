@@ -22,7 +22,7 @@ const vdCheckUp = (event, action) => {
             + `kā arī ${extendedNames.join(', ')}.`
         )
     } else if (datePattern.test(param)) {
-        let [input, month, day] = param.match(datePattern)
+        let [input, day, month] = param.match(datePattern)
         month = _.padStart(month, 2, '0')
         day = _.padStart(day, 2, '0')
 
