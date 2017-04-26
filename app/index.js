@@ -25,14 +25,16 @@ const messageCheck = () => {
             vdPrinted = false;
         }
 
-        let reply = checkIfExists(currentKey);
+        let replies = checkIfExists(currentKey);
 
-        if (reply) {
-            let currentClient = currentChannels[reply.channel];
-            if (currentClient) {
-                currentClient.say(`${reply.nick}, a reminder for you: '${reply.message}'`);
-                removeFromMemory(currentKey);
-            }
+        if (replies && replies.length) {
+            replies.map(reply => {
+                let currentClient = currentChannels[reply.channel];
+                if (currentClient) {
+                    currentClient.say(`${reply.nick}, a reminder for you: '${reply.message}'`);
+                }
+            })
+            removeFromMemory(currentKey);
         }
     }, 1)
 }
@@ -50,8 +52,8 @@ client.connect({
 });
 
 client.on('close', () => {
-  le.log('client.close called!');
-  process.exit(1);
+    console.log('client.close called!');
+    process.exit(1);
 });
 
 client.on('registered', () => {
