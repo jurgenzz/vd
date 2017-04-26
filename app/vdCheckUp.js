@@ -22,11 +22,11 @@ const vdCheckUp = (event, action) => {
             + `kā arī ${extendedNames.join(', ')}.`
         )
     } else if (datePattern.test(param)) {
-        let [input, month, day] = param.match(datePattern)
-        month = _.padStart(month, 2, '0')
-        day = _.padStart(day, 2, '0')
+        let [input, day, month] = param.match(datePattern)
+        let paddedMonth = _.padStart(month, 2, '0')
+        let paddedDay = _.padStart(day, 2, '0')
 
-        const key = `${month}-${day}`
+        const key = `${paddedMonth}-${paddedDay}`
 
         const names = vdLib[key]
         const extendedNames = vdExd[key]
