@@ -6,6 +6,8 @@ const client = new irc.Client();
 const defaultChannel = config.defaultChannel || '#meeseekeria';
 const {vdCheckUp} = require('./vdCheckUp');
 
+var io = require('socket.io')(3030);
+
 let connectionTime;
 let currentChannels = {};
 let vdPrinted = false;
@@ -69,6 +71,11 @@ client.on('registered', () => {
 });
 
 client.on('message', (e) => {
+
+    if (e.target === '#developerslv') {
+        io.emit('message', {data: e, time: hypheniphyDate(new Date())});
+    }
+
     commands.map(command => {
         if(e.message.match(command.regex) && e.message.indexOf(command.regex) === 0) {
             command.action(e, {connectionTime: connectionTime});
