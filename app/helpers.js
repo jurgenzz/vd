@@ -63,11 +63,12 @@ const humanizeDelta = (delta) => {
 
 const storeDate = (date, nick, message, channel) => {
     const newReminders = reminders || {};
-    newReminders[date] = {
+    newReminders[date] = newReminders[date] || [];
+    newReminders[date].push({
         nick: nick,
         message: message,
         channel: channel
-    }
+    })
     fs.writeFile('temp/reminders.json', JSON.stringify(newReminders));
 }
 
