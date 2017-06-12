@@ -13,9 +13,9 @@ let currentChannels = {};
 let vdPrinted = false;
 const messageCheck = () => {
   setInterval(() => {
-    
+
     let currentKey = hypheniphyDate(new Date());
-    
+
     if (currentKey.indexOf('21-22-0') >= 0) {
       if (!vdPrinted) {
         vdPrinted = true;
@@ -26,9 +26,9 @@ const messageCheck = () => {
     } else {
       vdPrinted = false;
     }
-    
+
     let replies = checkIfExists(currentKey);
-    
+
     if (replies && replies.length) {
       replies.map(reply => {
         let currentClient = currentChannels[reply.channel];
@@ -70,26 +70,36 @@ client.on('registered', () => {
   messageCheck()
 });
 
-client.on('message', (e) => {
-  let commandWasFound = false;
-  
+const resolveMessage = (event, replyToUser, originalEvent) => {
+
   commands.map(command => {
-    if(e.message.match(command.regex) && e.message.indexOf(command.regex) === 0) {
-      commandWasFound = true;
-      command.action(e, {connectionTime: connectionTime});
+    if(event.message.match(command.regex) && event.message.indexOf(command.regex) === 0) {
+      command.action(event, {connectionTime, replyToUser});
+      return;
     }
   })
-  
-  if (!commandWasFound) {    
-    let db = new Storage('../db');
-    let commands = db.get('commands');
-    console.log(commands);
-    if (commands) {
-      commands = JSON.parse(commands);
-    }
-    
-    if (commands[e.message]) {
-      e.reply(commands[e.message]);
-    }
+
+  let db = new Storage('../db');
+  let UIcommands = db.get('commands');
+  if (UIcommands) {
+    UIcommands = JSON.parse(UIcommands);
   }
+  let uiMessage = event.message.split(' ').slice(1);
+  uiMessage = uiMessage.join(' ')
+  const cmd = event.message.split(' ')[0]
+  if (UIcommands[cmd]) {
+    const reply = UIcommands[cmd].replace(/{param}/, uiMessage).replace(/{nick}/, event.nick);
+    event.reply(reply);
+  }
+}
+
+client.on('message', (event) => {
+  let message = event.message;
+  let eventToUse = Object.assign({}, event)
+  let replyToUser = false;
+  if (message.indexOf('vdk, ') === 0) {
+    replyToUser = true;
+  }
+  eventToUse.message = eventToUse.message.replace(/vdk, /g, '!');
+  resolveMessage(eventToUse, replyToUser, event);
 })
