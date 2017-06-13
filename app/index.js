@@ -86,7 +86,8 @@ const resolveMessage = (event, replyToUser, originalEvent) => {
   }
   let uiMessage = event.message.split(' ').slice(1);
   uiMessage = uiMessage.join(' ')
-  const cmd = event.message.split(' ')[0]
+  const cmd = event.message.split(' ')[0];
+
   if (UIcommands[cmd]) {
     const reply = UIcommands[cmd].replace(/{param}/, uiMessage).replace(/{nick}/, event.nick);
     event.reply(reply);
@@ -97,9 +98,12 @@ client.on('message', (event) => {
   let message = event.message;
   let eventToUse = Object.assign({}, event)
   let replyToUser = false;
-  if (message.indexOf('vdk, ') === 0) {
+  
+  // https://developers.lv/47f88266-90d2-4e20-abe9-9b06a3646aa7
+  const nickPattern = new RegExp(`^${config.nick}[,:]{1} ?`)
+  if (nickPattern.test(message)) {
     replyToUser = true;
+    eventToUse.message = eventToUse.message.replace(nickPattern, '!');
   }
-  eventToUse.message = eventToUse.message.replace(/vdk, /g, '!');
   resolveMessage(eventToUse, replyToUser, event);
 })

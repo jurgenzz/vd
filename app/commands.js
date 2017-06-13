@@ -9,6 +9,13 @@ const commands = [
     action: event => vdCheckUp(event, 'reply')
   },
   {
+    regex: '!echo',
+    action: event => {
+      let reply = event.message.replace(/!echo/, '');
+      event.reply(reply);
+    }
+  },
+  {
     regex: '!ping',
     action: (event, {replyToUser}) => {
       let reply = replyToUser ? `${event.nick}, pong!` : 'pong'
