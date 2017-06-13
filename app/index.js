@@ -16,7 +16,7 @@ const messageCheck = () => {
 
     let currentKey = hypheniphyDate(new Date());
 
-    if (currentKey.indexOf('21-22-0') >= 0) {
+    if (currentKey.indexOf('9-0-0') >= 0) {
       if (!vdPrinted) {
         vdPrinted = true;
         if (currentChannels[defaultChannel]) {
@@ -98,7 +98,7 @@ client.on('message', (event) => {
   let message = event.message;
   let eventToUse = Object.assign({}, event)
   let replyToUser = false;
-  
+
   // https://developers.lv/47f88266-90d2-4e20-abe9-9b06a3646aa7
   const nickPattern = new RegExp(`^${config.nick}[,:]{1} ?`)
   if (nickPattern.test(message)) {
