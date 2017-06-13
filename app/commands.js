@@ -11,6 +11,9 @@ const commands = [
   {
     regex: '!echo',
     action: event => {
+      if (event.nick.match(/zn|msks|vdk|cbot_git|Xn/)) {
+        return;
+      }
       let reply = event.message.replace(/!echo/, '');
       event.reply(reply);
     }
