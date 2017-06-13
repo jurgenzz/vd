@@ -99,11 +99,16 @@ client.on('message', (event) => {
   let eventToUse = Object.assign({}, event)
   let replyToUser = false;
 
+  if (event.nick === config.nick) {
+    return;
+  }
+
   // https://developers.lv/47f88266-90d2-4e20-abe9-9b06a3646aa7
   const nickPattern = new RegExp(`^${config.nick}[,:]{1} ?`)
   if (nickPattern.test(message)) {
     replyToUser = true;
     eventToUse.message = eventToUse.message.replace(nickPattern, '!');
   }
+
   resolveMessage(eventToUse, replyToUser, event);
 })
