@@ -44,13 +44,12 @@ const commands = [
 
       voteArr = _.sortBy(voteArr, arr => arr.value).reverse().slice(0, 5);
 
-      let msgToReply = "Current votes: ";
+      let msgToReply = "Top-hated nicks: ";
 
       voteArr.map(vote => {
-        msgToReply = msgToReply + vote.nick + ` [${vote.value}]; `;
+        msgToReply = msgToReply + vote.nick + ` [${vote.value}], `;
       });
-
-      event.reply(msgToReply);
+      event.reply(msgToReply.replace(/,\s$/g, ""));
     }
   },
   {
