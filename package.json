@@ -10,6 +10,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "axios": "^0.16.2",
     "irc-framework": "^2.6.1",
     "leveldown": "^1.7.0",
     "levelup": "^1.3.6",
