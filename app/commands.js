@@ -1,5 +1,7 @@
 const _ = require("lodash");
 const moment = require("moment");
+const axios = require("axios");
+const config = require("./config");
 const {
   humanizeDelta,
   storeDate,
@@ -9,10 +11,47 @@ const {
 const { vdCheckUp } = require("./vdCheckUp");
 let Storage = require("node-storage");
 
+let weatherInProgress = false;
+
+const clearWeather = () => {
+  setTimeout(() => {
+    weatherInProgress = false;
+  }, 5000);
+};
+
 const commands = [
   {
     regex: "!vd",
     action: event => vdCheckUp(event, "reply")
+  },
+  {
+    regex: "!weather",
+    action: event => {
+      let msgArr = event.message.split(" ");
+      let city = msgArr[1];
+
+      if (city && !weatherInProgress) {
+        weatherInProgress = true;
+
+        axios
+          .get(
+            `http://api.openweathermap.org/data/2.5/find?q=${city}&units=metric&appid=${config.weatherAPI}`
+          )
+          .then(res => {
+            if (res && res.data && res.data.list && res.data.list.length) {
+              let weatherInfo = res.data.list[0];
+              let weatherDescription = res.data.list[0].weather[0];
+              let reply = `Weather in ${city}: ${weatherDescription.description}, Temperature: ${weatherInfo
+                .main.temp}℃ , wind: ${weatherInfo.wind.speed} m/s.`;
+              event.reply(reply);
+              clearWeather();
+            }
+          })
+          .catch(err => {
+            clearWeather();
+          });
+      }
+    }
   },
   {
     regex: "!voteban",
