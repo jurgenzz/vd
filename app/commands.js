@@ -12,6 +12,8 @@ const { vdCheckUp } = require("./vdCheckUp");
 let Storage = require("node-storage");
 
 let weatherInProgress = false;
+let usersVoted = [];
+
 
 const clearWeather = () => {
   setTimeout(() => {
@@ -35,7 +37,7 @@ const commands = [
 
         axios
           .get(
-            `http://api.openweathermap.org/data/2.5/find?q=${city}&units=metric&appid=${config.weatherAPI}`
+          `http://api.openweathermap.org/data/2.5/find?q=${city}&units=metric&appid=${config.weatherAPI}`
           )
           .then(res => {
             if (res && res.data && res.data.list && res.data.list.length) {
@@ -55,7 +57,10 @@ const commands = [
   },
   {
     regex: "!voteban",
-    action: event => {
+    action: (event, {client}) => {
+      if (event.nick.match(/zn|msks|vdk|cbot_git|Xn/)) {
+        return;
+      }
       let msgArr = event.message.split(" ");
       let nick;
       // get nick from cmd
@@ -63,10 +68,38 @@ const commands = [
         nick = msgArr[1];
       }
 
+      const UNDERLINE_CHAR = '\u001f'
+
       let voteDB = new Storage("../voteDB");
       let nicks = voteDB.get("nicks");
 
       nicks = nicks ? JSON.parse(nicks) : {};
+
+      let currentUserHasVoted = false;
+      usersVoted.map(user => {
+        if (user.nick === event.nick) {
+          currentUserHasVoted = user;
+        }
+      })
+
+      const THIRTY_MINUTES = 1800000;
+
+      if (currentUserHasVoted) {
+        let timeLeftInMs = (currentUserHasVoted.time + THIRTY_MINUTES) - new Date().getTime();
+        let minutes = Math.floor(timeLeftInMs / 60000)
+        var seconds = ((timeLeftInMs % 60000) / 1000).toFixed(0);
+        client.say(event.nick, `Varēsi balsot pēc ${minutes}:${seconds}.`)
+        return;
+      }  
+
+      let newUserHasVoted = {nick: event.nick, time: new Date().getTime() + THIRTY_MINUTES}
+      usersVoted.push(newUserHasVoted);
+
+
+      setTimeout(() => {
+        usersVoted = _.pull(usersVoted, newUserHasVoted);
+      }, THIRTY_MINUTES)
+    
 
       if (nicks[nick]) {
         nicks[nick] = nicks[nick] + 1;
@@ -86,7 +119,7 @@ const commands = [
       let msgToReply = "Top-hated nicks: ";
 
       voteArr.map(vote => {
-        msgToReply = msgToReply + vote.nick + ` [${vote.value}], `;
+        msgToReply = msgToReply + vote.nick.replace(/./, char => '\u001f' + char + '\u001f') + ` [${vote.value}], `;
       });
       event.reply(msgToReply.replace(/,\s$/g, ""));
     }
