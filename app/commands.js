@@ -1,18 +1,20 @@
-const _ = require("lodash");
-const moment = require("moment");
-const axios = require("axios");
-const config = require("./config");
+const _ = require('lodash');
+const moment = require('moment');
+const axios = require('axios');
+const config = require('./config');
 const {
   humanizeDelta,
   storeDate,
   hypheniphyDate,
   DURATION_MAPPING
-} = require("./helpers");
-const { vdCheckUp } = require("./vdCheckUp");
-let Storage = require("node-storage");
+} = require('./helpers');
+const { vdCheckUp } = require('./vdCheckUp');
+let Storage = require('node-storage');
 
 let weatherInProgress = false;
 let usersVoted = [];
+
+
 
 
 const clearWeather = () => {
@@ -23,13 +25,13 @@ const clearWeather = () => {
 
 const commands = [
   {
-    regex: "!vd",
-    action: event => vdCheckUp(event, "reply")
+    regex: '!vd',
+    action: event => vdCheckUp(event, 'reply')
   },
   {
-    regex: "!weather",
+    regex: '!weather',
     action: event => {
-      let msgArr = event.message.split(" ");
+      let msgArr = event.message.split(' ');
       let city = msgArr[1];
 
       if (city && !weatherInProgress) {
@@ -56,22 +58,26 @@ const commands = [
     }
   },
   {
-    regex: "!voteban",
-    action: (event, {client}) => {
+    regex: '!voteban',
+    action: (event, { client, currentChannels }) => {
       if (event.nick.match(/zn|msks|vdk|cbot_git|Xn/)) {
         return;
       }
-      let msgArr = event.message.split(" ");
+      let msgArr = event.message.split(' ');
       let nick;
       // get nick from cmd
       if (msgArr.length === 2) {
         nick = msgArr[1];
+        // 16 max nick length in irc
+        if (!nick || nick.length > 16) {
+          return;
+        }
       }
 
       const UNDERLINE_CHAR = '\u001f'
 
-      let voteDB = new Storage("../voteDB");
-      let nicks = voteDB.get("nicks");
+      let voteDB = new Storage('../voteDB');
+      let nicks = voteDB.get('nicks');
 
       nicks = nicks ? JSON.parse(nicks) : {};
 
@@ -82,67 +88,91 @@ const commands = [
         }
       })
 
-      const THIRTY_MINUTES = 1800000;
-
-      if (currentUserHasVoted) {
-        let timeLeftInMs = (currentUserHasVoted.time + THIRTY_MINUTES) - new Date().getTime();
-        let minutes = Math.floor(timeLeftInMs / 60000)
-        var seconds = ((timeLeftInMs % 60000) / 1000).toFixed(0);
-        client.say(event.nick, `Varēsi balsot pēc ${minutes}:${seconds}.`)
+      const chan = currentChannels[event.target];
+      // no spamming pm
+      if (!chan) {
+        client.say(event.nick, `Tev nebūs balsot citiem nezinot.`)
         return;
-      }  
-
-      let newUserHasVoted = {nick: event.nick, time: new Date().getTime() + THIRTY_MINUTES}
-      usersVoted.push(newUserHasVoted);
-
-
-      setTimeout(() => {
-        usersVoted = _.pull(usersVoted, newUserHasVoted);
-      }, THIRTY_MINUTES)
-    
-
-      if (nicks[nick]) {
-        nicks[nick] = nicks[nick] + 1;
-      } else {
-        nicks[nick] = 1;
       }
 
-      voteDB.put("nicks", JSON.stringify(nicks));
+      chan.updateUsers(ev => {
+        let userIsOnline = _.find(ev.users, user => {
+          console.log(user)
+          console.log(user.nick, nick)
+          if (user.nick === nick) {
+            return user
+          }
+        })
 
-      // remap votearr so we can find 5 with largest votes
-      let voteArr = Object.keys(nicks).map(nick => {
-        return { nick: nick, value: nicks[nick] };
-      });
+        if (!userIsOnline) {
+          client.say(event.nick, `Balsot var tikai par online lietotājiem.`)
+          return;
+        }
 
-      voteArr = _.sortBy(voteArr, arr => arr.value).reverse().slice(0, 5);
 
-      let msgToReply = "Top-hated nicks: ";
+        const THIRTY_MINUTES = 1800000;
 
-      voteArr.map(vote => {
-        msgToReply = msgToReply + vote.nick.replace(/./, char => '\u001f' + char + '\u001f') + ` [${vote.value}], `;
-      });
-      event.reply(msgToReply.replace(/,\s$/g, ""));
+        if (currentUserHasVoted) {
+          let timeLeftInMs = (currentUserHasVoted.time) - new Date().getTime();
+          let minutes = Math.floor(timeLeftInMs / 60000)
+          var seconds = ((timeLeftInMs % 60000) / 1000).toFixed(0);
+          client.say(event.nick, `Varēsi balsot pēc ${minutes}:${seconds}.`)
+          return;
+        }
+
+        let newUserHasVoted = { nick: event.nick, time: new Date().getTime() + THIRTY_MINUTES }
+        usersVoted.push(newUserHasVoted);
+
+
+        setTimeout(() => {
+          usersVoted = _.pull(usersVoted, newUserHasVoted);
+        }, THIRTY_MINUTES)
+
+
+        if (nicks[nick]) {
+          nicks[nick] = nicks[nick] + 1;
+        } else {
+          nicks[nick] = 1;
+        }
+
+        voteDB.put('nicks', JSON.stringify(nicks));
+
+        // remap votearr so we can find 5 with largest votes
+        let voteArr = Object.keys(nicks).map(nick => {
+          return { nick: nick, value: nicks[nick] };
+        });
+
+        voteArr = _.sortBy(voteArr, arr => arr.value).reverse().slice(0, 5);
+
+        let msgToReply = 'Top-hated nicks: ';
+
+        voteArr.map(vote => {
+          msgToReply = msgToReply + vote.nick.replace(/./, char => UNDERLINE_CHAR + char + UNDERLINE_CHAR) + ` [${vote.value}], `;
+        });
+        event.reply(msgToReply.replace(/,\s$/g, ''));
+
+      })
     }
   },
   {
-    regex: "!echo",
+    regex: '!echo',
     action: event => {
       if (event.nick.match(/zn|msks|vdk|cbot_git|Xn/)) {
         return;
       }
-      let reply = event.message.replace(/!echo/, "");
+      let reply = event.message.replace(/!echo/, '');
       event.reply(reply);
     }
   },
   {
-    regex: "!ping",
+    regex: '!ping',
     action: (event, { replyToUser }) => {
-      let reply = replyToUser ? `${event.nick}, pong!` : "pong";
+      let reply = replyToUser ? `${event.nick}, pong!` : 'pong';
       event.reply(reply);
     }
   },
   {
-    regex: "!uptime",
+    regex: '!uptime',
     action: (event, { connectionTime }) => {
       const now = new Date();
       let timeUp = humanizeDelta(now - connectionTime);
@@ -150,16 +180,16 @@ const commands = [
     }
   },
   {
-    regex: "!remind",
+    regex: '!remind',
     action: event => {
       let msg = event.message;
       let nick = event.nick;
       let channel = event.target;
-      let timeStamp = event.message.split(" ")[1]; // returns 7d4h, 7d, 1d, 2w,
+      let timeStamp = event.message.split(' ')[1]; // returns 7d4h, 7d, 1d, 2w,
       msg = msg
-        .replace(/!remind/g, "")
-        .replace(timeStamp, "")
-        .replace(/\s+/, "");
+        .replace(/!remind/g, '')
+        .replace(timeStamp, '')
+        .replace(/\s+/, '');
 
       // days / week / hour / match
       if (!timeStamp) {
@@ -174,19 +204,17 @@ const commands = [
             seconds +
             date.match(/\d+/)[0] * DURATION_MAPPING[date.match(/[a-z]/)]
           );
-        },
-        0
-      );
+        }, 0);
 
-      if (seconds / DURATION_MAPPING["d"] > 50) {
+      if (seconds / DURATION_MAPPING['d'] > 50) {
         event.reply(`Sorry ${nick}, memory limited to 50 days.`);
         return;
       }
 
-      let when = new Date(moment().add(seconds, "seconds").valueOf());
+      let when = new Date(moment().add(seconds, 'seconds').valueOf());
       storeDate(hypheniphyDate(when), nick, msg, channel);
 
-      let after = _.join(humanizeDelta(seconds * 1000).split(" "), ", ");
+      let after = _.join(humanizeDelta(seconds * 1000).split(' '), ', ');
       event.reply(`A reminder has been set. Will remind you in ${after}`);
     }
   }

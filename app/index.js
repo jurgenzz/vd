@@ -81,7 +81,7 @@ const resolveMessage = (event, replyToUser, originalEvent) => {
       event.message.match(command.regex) &&
       event.message.indexOf(command.regex) === 0
     ) {
-      command.action(event, { connectionTime, replyToUser, client });
+      command.action(event, { connectionTime, replyToUser, client, currentChannels });
       return;
     }
   });
