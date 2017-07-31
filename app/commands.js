@@ -14,7 +14,7 @@ let Storage = require('node-storage');
 let weatherInProgress = false;
 let usersVoted = [];
 
-
+const UNDERLINE_CHAR = '\u001f'
 
 
 const clearWeather = () => {
@@ -63,23 +63,33 @@ const commands = [
       if (event.nick.match(/zn|msks|vdk|cbot_git|Xn/)) {
         return;
       }
-      let msgArr = event.message.split(' ');
-      let nick;
-      // get nick from cmd
-      if (msgArr.length === 2) {
-        nick = msgArr[1];
-        // 16 max nick length in irc
-        if (!nick || nick.length > 16) {
-          return;
-        }
-      }
-
-      const UNDERLINE_CHAR = '\u001f'
 
       let voteDB = new Storage('../voteDB');
       let nicks = voteDB.get('nicks');
-
       nicks = nicks ? JSON.parse(nicks) : {};
+
+      let msgArr = event.message.split(' ');
+      let nick;
+      // get nick from cmd
+      if (msgArr.length) {
+        if (msgArr.length === 2) {
+          nick = msgArr[1];
+        } else {
+          // TODO: wrap in a function
+          let voteArr = Object.keys(nicks).map(nick => {
+            return { nick: nick, value: nicks[nick] };
+          });
+          voteArr = _.sortBy(voteArr, arr => arr.value).reverse().slice(0, 5);
+
+          let msgToReply = 'Top-hated nicks: ';
+
+          voteArr.map(vote => {
+            msgToReply = msgToReply + vote.nick.replace(/./, char => UNDERLINE_CHAR + char + UNDERLINE_CHAR) + ` [${vote.value}], `;
+          });
+          event.reply(msgToReply.replace(/,\s$/g, ''));       
+          return;
+        }
+      }
 
       let currentUserHasVoted = false;
       usersVoted.map(user => {
@@ -97,8 +107,6 @@ const commands = [
 
       chan.updateUsers(ev => {
         let userIsOnline = _.find(ev.users, user => {
-          console.log(user)
-          console.log(user.nick, nick)
           if (user.nick === nick) {
             return user
           }
@@ -122,7 +130,6 @@ const commands = [
 
         let newUserHasVoted = { nick: event.nick, time: new Date().getTime() + THIRTY_MINUTES }
         usersVoted.push(newUserHasVoted);
-
 
         setTimeout(() => {
           usersVoted = _.pull(usersVoted, newUserHasVoted);
