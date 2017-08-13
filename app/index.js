@@ -97,6 +97,7 @@ const resolveMessage = (event, replyToUser, originalEvent) => {
 
   if (UIcommands[cmd]) {
     const reply = UIcommands[cmd]
+      .replace(/{urlParam}/, encodeURIComponent(uiMessage))
       .replace(/{param}/, uiMessage)
       .replace(/{nick}/, event.nick);
     event.reply(reply);
