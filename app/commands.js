@@ -25,6 +25,10 @@ const clearWeather = () => {
 
 const commands = [
   {
+    regex: /:\)\)\)\)\)/,
+    action: event => event.reply(')))))')
+  },
+  {
     regex: '!vd',
     action: event => vdCheckUp(event, 'reply')
   },
@@ -46,10 +50,11 @@ const commands = [
               let weatherInfo = res.data.list[0];
               let weatherDescription = res.data.list[0].weather[0];
               let reply = `Weather in ${city}: ${weatherDescription.description}, Temperature: ${weatherInfo
-                .main.temp}℃ , wind: ${weatherInfo.wind.speed} m/s.`;
+                .main.temp}°C, wind: ${weatherInfo.wind.speed} m/s.`;
               event.reply(reply);
-              clearWeather();
-            }
+              }  
+	    clearWeather();
+            
           })
           .catch(err => {
             clearWeather();
@@ -58,9 +63,9 @@ const commands = [
     }
   },
   {
-    regex: '!voteban',
+    regex: '/voteban',
     action: (event, { client, currentChannels }) => {
-      if (event.nick.match(/zn|msks|vdk|cbot_git|Xn/)) {
+      if (event.nick.match(/zn|msks|vdk|cbot_git|Xn|agni/)) {
         return;
       }
 
@@ -75,6 +80,9 @@ const commands = [
         if (msgArr.length === 2) {
           nick = msgArr[1];
         } else {
+	  if (!event.nick.match(/daGrevis|ij|jurgenzz/)) {
+	 	return;
+	  }
           // TODO: wrap in a function
           let voteArr = Object.keys(nicks).map(nick => {
             return { nick: nick, value: nicks[nick] };
@@ -101,7 +109,7 @@ const commands = [
       const chan = currentChannels[event.target];
       // no spamming pm
       if (!chan) {
-        client.say(event.nick, `Tev nebūs balsot citiem nezinot.`)
+       // client.say(event.nick, `Tev nebūs balsot citiem nezinot.`)
         return;
       }
 
@@ -113,7 +121,7 @@ const commands = [
         })
 
         if (!userIsOnline) {
-          client.say(event.nick, `Balsot var tikai par online lietotājiem.`)
+         // client.say(event.nick, `Balsot var tikai par online lietotājiem.`)
           return;
         }
 
@@ -124,7 +132,7 @@ const commands = [
           let timeLeftInMs = (currentUserHasVoted.time) - new Date().getTime();
           let minutes = Math.floor(timeLeftInMs / 60000)
           var seconds = ((timeLeftInMs % 60000) / 1000).toFixed(0);
-          client.say(event.nick, `Varēsi balsot pēc ${minutes}:${seconds}.`)
+         // client.say(event.nick, `Varēsi balsot pēc ${minutes}:${seconds}.`)
           return;
         }
 
@@ -156,7 +164,7 @@ const commands = [
         voteArr.map(vote => {
           msgToReply = msgToReply + vote.nick.replace(/./, char => UNDERLINE_CHAR + char + UNDERLINE_CHAR) + ` [${vote.value}], `;
         });
-        event.reply(msgToReply.replace(/,\s$/g, ''));
+       // event.reply(msgToReply.replace(/,\s$/g, ''));
 
       })
     }
@@ -164,7 +172,7 @@ const commands = [
   {
     regex: '!echo',
     action: event => {
-      if (event.nick.match(/zn|msks|vdk|cbot_git|Xn/)) {
+      if (event.nick.match(/zn|msks|vdk|cbot_git|Xn|agni/)) {
         return;
       }
       let reply = event.message.replace(/!echo/, '');
