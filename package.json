@@ -1,0 +1,15 @@
+{
+  "name": "vdk",
+  "version": "2.0.0",
+  "description": "Second version of vdk (name day calendar) bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "j.kacens",
+  "license": "ISC",
+  "dependencies": {
+    "irc-framework": "^2.9.1",
+    "lodash": "^4.17.4"
+  }
+}
