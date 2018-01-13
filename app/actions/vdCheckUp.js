@@ -39,17 +39,26 @@ const vdCheckUp = (message, event, action = 'reply') => {
         (extendedNames.length > 0 ? `kā arī ${extendedNames.join(', ')}.` : '')
     );
   } else {
+    let nameForReply = '';
     const key = _.findKey(vdLib, s => {
-      s = s.map(v => v.toLowerCase());
+      let lowerNames = s.map(v => v.toLowerCase());
       let lowerParam = param.toLowerCase();
-      return s.indexOf(lowerParam) !== -1;
+      let index = lowerNames.indexOf(lowerParam);
+      if (index !== -1) {
+        nameForReply = s[index];
+      }
+      return index !== -1;
     });
     const extendedKey = key
       ? null
       : _.findKey(vdExtended, s => {
-          s = s.map(v => v.toLowerCase());
+          let lowerNames = s.map(v => v.toLowerCase());
           let lowerParam = param.toLowerCase();
-          return s.indexOf(lowerParam) !== -1;
+          let index = lowerNames.indexOf(lowerParam);
+          if (index !== -1) {
+            nameForReply = s[index];
+          }
+          return index !== -1;
         });
 
     if (!key && !extendedKey) {
@@ -61,7 +70,7 @@ const vdCheckUp = (message, event, action = 'reply') => {
     month = +month;
     day = +day;
 
-    event[action](`${param} vārda dienu svin ${getFullDateName(month, day)}.`);
+    event[action](`${nameForReply} vārda dienu svin ${getFullDateName(month, day)}.`);
   }
 };
 
