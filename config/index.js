@@ -1,14 +1,19 @@
-// const {prod} = require('./prod.config')
-const prod = {};
+let config = {};
+try {
+  const prod = require('./prod.config')
+  config = prod;
+} catch (err) {
+ // err
+}
 
 const APP_CONFIG = {
-  host: prod.host || 'chat.freenode.net',
-  port: prod.port || 6667,
-  nick: prod.nick || 'vdk_dev2',
-  username: prod.username || 'vdk_dev2',
-  password: prod.password || '',
-  tls: !!prod.tls ? prod.tls : false,
-  channels: prod.channels || ['#meeseekeria'],
+  host: config.host || 'chat.freenode.net',
+  port: config.port || 6667,
+  nick: config.nick || 'vdk_dev2',
+  username: config.username || 'vdk_dev2',
+  password: config.password || '',
+  tls: !!config.tls ? config.tls : false,
+  channels: config.channels || ['#meeseekeria'],
   defaultChannel: '#meeseekeria',
   auto_reconnect: true,
   auto_reconnect_wait: 1000,
