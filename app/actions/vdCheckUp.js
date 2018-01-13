@@ -39,8 +39,18 @@ const vdCheckUp = (message, event, action = 'reply') => {
         (extendedNames.length > 0 ? `kā arī ${extendedNames.join(', ')}.` : '')
     );
   } else {
-    const key = _.findKey(vdLib, s => s.indexOf(param) !== -1);
-    const extendedKey = key ? null : _.findKey(vdExtended, s => s.indexOf(param) !== -1);
+    const key = _.findKey(vdLib, s => {
+      s = s.map(v => v.toLowerCase());
+      let lowerParam = param.toLowerCase();
+      return s.indexOf(param) !== -1;
+    });
+    const extendedKey = key
+      ? null
+      : _.findKey(vdExtended, s => {
+          s = s.map(v => v.toLowerCase());
+          let lowerParam = param.toLowerCase();
+          return s.indexOf(param) !== -1;
+        });
 
     if (!key && !extendedKey) {
       event[action](`${param} nesvin.`);
