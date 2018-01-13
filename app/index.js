@@ -1,124 +1,146 @@
-const irc = require("irc-framework");
-const commands = require("./commands");
-const config = require("./config");
+const { Commands } = require('./Commands');
+const { APP_CONFIG } = require('../config');
 const {
+  hypheniphyDate,
   checkIfExists,
-  removeFromMemory,
-  hypheniphyDate
-} = require("./helpers");
-const client = new irc.Client();
-const defaultChannel = config.defaultChannel || "#meeseekeria";
-const { vdCheckUp } = require("./vdCheckUp");
+  removeFromMemory
+} = require('./helpers');
+const { vdCheckUp } = require('./actions/vdCheckUp');
 
-let Storage = require("node-storage");
+class VdkClass {
+  constructor() {
+    this.registered = null;
+    this.client = null;
+    this.channels = {};
+    this.config = {};
+    this.messages = [];
+    this.uptime = 0;
+  }
+  /**
+   *
+   * @param {*} ircClient
+   */
 
-let connectionTime;
-let currentChannels = {};
-let vdPrinted = false;
-const messageCheck = () => {
-  setInterval(() => {
-    let currentKey = hypheniphyDate(new Date());
+  setClient(ircClient, config) {
+    this.client = ircClient;
+    this.config = config;
+    this.defaultChannel = config.defaultChannel;
+    this.uptime = new Date().getTime();
+  }
 
-    if (currentKey.indexOf("9-0-0") >= 0) {
-      if (!vdPrinted) {
-        vdPrinted = true;
-        if (currentChannels[defaultChannel]) {
-          vdCheckUp(currentChannels[defaultChannel], "say");
-        }
-      }
-    } else {
-      vdPrinted = false;
-    }
+  /**
+   *
+   */
 
-    let replies = checkIfExists(currentKey);
+  getUptime() {
+    return this.uptime;
+  }
 
-    if (replies && replies.length) {
-      replies.map(reply => {
-        let currentClient = currentChannels[reply.channel];
-        if (currentClient) {
-          currentClient.say(
-            `${reply.nick}, a reminder for you: '${reply.message}'`
-          );
-        }
-      });
-      removeFromMemory(currentKey);
-    }
-  }, 1);
-};
-
-client.connect({
-  host: config.host,
-  port: config.port,
-  nick: config.nick,
-  username: config.username,
-  password: config.password,
-  tls: config.tls,
-  auto_reconnect: true,
-  auto_reconnect_wait: 1000,
-  auto_reconnect_max_retries: 1000
-});
-
-client.on("close", () => {
-  console.log("client.close called!");
-  process.exit(1);
-});
-
-client.on("registered", () => {
-  connectionTime = new Date();
-  // console.log('hehe')
-  config.channels.map(channel => {
-    let currentChannel = client.channel(channel);
-    currentChannels[channel] = currentChannel;
-    console.log(`Joining ${channel}`);
-    currentChannel.join();
-  });
-  messageCheck();
-});
-
-const resolveMessage = (event, replyToUser, originalEvent) => {
-  commands.map(command => {
-    if (
-      event.message.match(command.regex) &&
-      event.message.indexOf(command.regex) === 0
-    ) {
-      command.action(event, { connectionTime, replyToUser, client, currentChannels });
+  /**
+   *
+   * @param {Array} channels
+   */
+  joinChannels(channels) {
+    if (!this.client) {
       return;
     }
-  });
 
-  let db = new Storage("../db");
-  let UIcommands = db.get("commands");
-  if (UIcommands) {
-    UIcommands = JSON.parse(UIcommands);
-  }
-  let uiMessage = event.message.split(" ").slice(1);
-  uiMessage = uiMessage.join(" ");
-  const cmd = event.message.split(" ")[0];
-
-  if (UIcommands[cmd]) {
-    const reply = UIcommands[cmd]
-      .replace(/{urlParam}/, encodeURIComponent(uiMessage))
-      .replace(/{param}/, uiMessage)
-      .replace(/{nick}/, event.nick);
-    event.reply(reply);
-  }
-};
-
-client.on("message", event => {
-  let message = event.message;
-  let eventToUse = Object.assign({}, event);
-  let replyToUser = false;
-
-  if (event.nick === config.nick) {
-    return;
+    console.log('joining channels');
+    channels.map(channel => {
+      let currentChannel = this.client.channel(channel);
+      this.addChannel(channel, currentChannel);
+      currentChannel.join();
+    });
+    this.messageCheck();
   }
 
-  // https://developers.lv/47f88266-90d2-4e20-abe9-9b06a3646aa7
-  const nickPattern = new RegExp(`^${config.nick}[,:]{1} ?`);
-  if (nickPattern.test(message)) {
-    replyToUser = true;
-    eventToUse.message = eventToUse.message.replace(nickPattern, "!");
+  /**
+   *
+   * @param {string} name
+   * @param {*} channel
+   */
+  addChannel(name, channel) {
+    this.channels[name] = channel;
   }
 
-  resolveMessage(eventToUse, replyToUser, event);
-});
+  /**
+   *
+   * @param {*} event
+   */
+  isMe(event) {
+    return event.nick === this.config.nick;
+  }
+
+  /**
+   *
+   * @param {string} message
+   */
+  storeMessage(message) {
+    //TODO: save last 50 only
+    // this.messages.push[message];
+  }
+
+  /**
+   *
+   * @param {*} event
+   */
+  handleMessage(event) {
+    let { message } = event;
+    this.storeMessage(message);
+    if (this.isMe(event)) {
+      return;
+    }
+
+    // https://developers.lv/47f88266-90d2-4e20-abe9-9b06a3646aa7
+    const nickPattern = new RegExp(`^${APP_CONFIG.nick}[,:]{1} ?`);
+
+    if (nickPattern.test(message)) {
+      message = message.replace(nickPattern, '!');
+    }
+
+    let isCommand = message.match(/^!\w+/);
+
+    if (!isCommand || !isCommand[0]) {
+      return;
+    }
+
+    let cmd = isCommand[0];
+
+    Commands.handleCommand(cmd, message, event, this);
+  }
+
+  messageCheck() {
+    let { channels, defaultChannel } = this;
+    setInterval(() => {
+      let currentDateTime = hypheniphyDate(new Date());
+
+      if (currentDateTime.indexOf('9-0-0') >= 0) {
+        if (!this.vdPrinted) {
+          this.vdPrinted = true;
+          if (channels[defaultChannel]) {
+            vdCheckUp(null, channels[defaultChannel], 'say');
+          }
+        }
+      } else {
+        this.vdPrinted = false;
+      }
+
+      let replies = checkIfExists(currentDateTime);
+
+      if (replies && replies.length) {
+        replies.map(reply => {
+          let currentClient = channels[reply.channel];
+          if (currentClient) {
+            currentClient.say(
+              `${reply.nick}, a reminder for you: '${reply.message}'`
+            );
+          }
+        });
+        removeFromMemory(currentDateTime);
+      }
+    }, 1);
+  }
+}
+
+let vdk = new VdkClass();
+module.exports = { vdk };

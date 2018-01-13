@@ -1,4 +1,10 @@
 node_modules
+<<<<<<< HEAD
 npm-debug.log
 app/config.json
 temp/*
+=======
+config/prod.config.js
+temp/*
+app/helpers/reminders.json
+>>>>>>> 401e0b591fe9d23947edbfe9ea89a9db8d2b1d53

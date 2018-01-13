@@ -1,15 +1,16 @@
 const _ = require('lodash');
 const fs = require('fs');
-const vdLib = require('./vd.json')
-const vdExd = require('./vd_exd.json');
 
 const BOLD_CHAR = '\u0002'
 
 let reminders = {}
 try {
-    reminders = require('../temp/reminders')
+    reminders = require('./data/reminders.json')
 } catch (err) {
-    console.log('WARNING: Could not find temp/reminders')
+    console.log('WARNING: Could not find temp/reminders, creating instead')
+    fs.writeFile('./app/helpers/data/reminders.json', JSON.stringify({}), err => {
+      // err
+    });
 }
 
 const monthNames = ['janvārī', 'februārī', 'martā', 'aprīlī', 'maijā', 'jūnijā', 'jūlijā', 'augustā', 'septembrī', 'oktobrī', 'novembrī', 'decembrī'];
@@ -33,7 +34,6 @@ const getDate = () => {
 
 const DURATION_MAPPING = {
     y: 60 * 60 * 24 * 365,
-    // mn: 60 * 60 * 24 * 30,
     w: 60 * 60 * 24 * 7,
     d: 60 * 60 * 24,
     h: 60 * 60,
@@ -69,7 +69,7 @@ const storeDate = (date, nick, message, channel) => {
         message: message,
         channel: channel
     })
-    fs.writeFile('temp/reminders.json', JSON.stringify(newReminders));
+    fs.writeFile('./app/helpers/reminders.json', JSON.stringify(newReminders), err => {});
 }
 
 const checkIfExists = (date) => {
@@ -79,7 +79,7 @@ const checkIfExists = (date) => {
 const removeFromMemory = (date) => {
     let newReminders = reminders || {};
     delete newReminders[date];
-    fs.writeFile('temp/reminders.json', JSON.stringify(newReminders));
+    fs.writeFile('./app/helpers/data/reminders.json', JSON.stringify(newReminders), err => {});
 }
 
 const hypheniphyDate = (date) => {
@@ -88,8 +88,6 @@ const hypheniphyDate = (date) => {
         m => date[m]()
     ), '-')
 }
-
-
 
 module.exports = {
     humanizeDelta,
