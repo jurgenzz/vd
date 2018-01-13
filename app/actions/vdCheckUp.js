@@ -42,14 +42,14 @@ const vdCheckUp = (message, event, action = 'reply') => {
     const key = _.findKey(vdLib, s => {
       s = s.map(v => v.toLowerCase());
       let lowerParam = param.toLowerCase();
-      return s.indexOf(param) !== -1;
+      return s.indexOf(lowerParam) !== -1;
     });
     const extendedKey = key
       ? null
       : _.findKey(vdExtended, s => {
           s = s.map(v => v.toLowerCase());
           let lowerParam = param.toLowerCase();
-          return s.indexOf(param) !== -1;
+          return s.indexOf(lowerParam) !== -1;
         });
 
     if (!key && !extendedKey) {
