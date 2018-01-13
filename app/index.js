@@ -1,12 +1,20 @@
-const {Commands} = require('./Commands');
+const { Commands } = require('./Commands');
+const { APP_CONFIG } = require('../config');
+const {
+  hypheniphyDate,
+  checkIfExists,
+  removeFromMemory
+} = require('./helpers');
+const { vdCheckUp } = require('./actions/vdCheckUp');
 
 class VdkClass {
   constructor() {
     this.registered = null;
     this.client = null;
     this.channels = {};
-    this.config = {}
+    this.config = {};
     this.messages = [];
+    this.uptime = 0;
   }
   /**
    *
@@ -16,6 +24,16 @@ class VdkClass {
   setClient(ircClient, config) {
     this.client = ircClient;
     this.config = config;
+    this.defaultChannel = config.defaultChannel;
+    this.uptime = new Date().getTime();
+  }
+
+  /**
+   *
+   */
+
+  getUptime() {
+    return this.uptime;
   }
 
   /**
@@ -33,6 +51,7 @@ class VdkClass {
       this.addChannel(channel, currentChannel);
       currentChannel.join();
     });
+    this.messageCheck();
   }
 
   /**
@@ -45,20 +64,20 @@ class VdkClass {
   }
 
   /**
-   * 
-   * @param {*} event 
+   *
+   * @param {*} event
    */
   isMe(event) {
     return event.nick === this.config.nick;
   }
 
   /**
-   * 
-   * @param {string} message 
+   *
+   * @param {string} message
    */
   storeMessage(message) {
     //TODO: save last 50 only
-    this.messages.push[message]
+    // this.messages.push[message];
   }
 
   /**
@@ -66,10 +85,17 @@ class VdkClass {
    * @param {*} event
    */
   handleMessage(event) {
-    let {message} = event;
+    let { message } = event;
     this.storeMessage(message);
     if (this.isMe(event)) {
       return;
+    }
+
+    // https://developers.lv/47f88266-90d2-4e20-abe9-9b06a3646aa7
+    const nickPattern = new RegExp(`^${APP_CONFIG.nick}[,:]{1} ?`);
+
+    if (nickPattern.test(message)) {
+      message = message.replace(nickPattern, '!');
     }
 
     let isCommand = message.match(/^!\w+/);
@@ -78,10 +104,41 @@ class VdkClass {
       return;
     }
 
-    let cmd = isCommand[0]
-    
-    Commands.handleCommand(cmd, message, event);
-    
+    let cmd = isCommand[0];
+
+    Commands.handleCommand(cmd, message, event, this);
+  }
+
+  messageCheck() {
+    let { channels, defaultChannel } = this;
+    setInterval(() => {
+      let currentDateTime = hypheniphyDate(new Date());
+
+      if (currentDateTime.indexOf('9-0-0') >= 0) {
+        if (!this.vdPrinted) {
+          this.vdPrinted = true;
+          if (channels[defaultChannel]) {
+            vdCheckUp(null, channels[defaultChannel], 'say');
+          }
+        }
+      } else {
+        this.vdPrinted = false;
+      }
+
+      let replies = checkIfExists(currentDateTime);
+
+      if (replies && replies.length) {
+        replies.map(reply => {
+          let currentClient = channels[reply.channel];
+          if (currentClient) {
+            currentClient.say(
+              `${reply.nick}, a reminder for you: '${reply.message}'`
+            );
+          }
+        });
+        removeFromMemory(currentDateTime);
+      }
+    }, 1);
   }
 }
 

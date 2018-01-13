@@ -9,7 +9,13 @@
   "author": "j.kacens",
   "license": "ISC",
   "dependencies": {
-    "irc-framework": "^2.9.1",
-    "lodash": "^4.17.4"
+    "axios": "^0.17.1",
+    "irc-framework": "^2.6.1",
+    "lodash": "^4.17.4",
+    "moment": "^2.20.1"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "printWidth": 120
   }
 }

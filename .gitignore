@@ -1,3 +1,4 @@
 node_modules
 config/prod.config.js
 temp/*
+app/helpers/reminders.json
