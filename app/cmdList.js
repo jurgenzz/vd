@@ -6,7 +6,7 @@ const { humanizeDelta } = require('./helpers');
 
 const cmdList = {
   '!ping': (message, event) => event.reply('pong!'),
-  '!vd': vdCheckUp,
+  '!vd': (message, event) => vdCheckUp(message, event),
   '!echo': (message, event) => {
     if (event.nick.match(/zn|msks|vdk|cbot_git|Xn/)) {
       return;
