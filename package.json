@@ -1,21 +1,22 @@
 {
-  "name": "ircbot",
-  "version": "0.0.1",
-  "description": "",
+  "name": "vdk",
+  "version": "2.0.0",
+  "description": "Second version of vdk (name day calendar) bot",
   "main": "index.js",
   "scripts": {
-    "start": "node app/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "MIT",
+  "author": "j.kacens",
+  "license": "ISC",
   "dependencies": {
-    "axios": "^0.16.2",
+    "axios": "^0.17.1",
     "irc-framework": "^2.6.1",
-    "leveldown": "^1.7.0",
-    "levelup": "^1.3.6",
     "lodash": "^4.17.4",
-    "moment": "^2.18.1",
+    "moment": "^2.20.1",
     "node-storage": "0.0.7"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "printWidth": 120
   }
 }
