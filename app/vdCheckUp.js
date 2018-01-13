@@ -18,8 +18,8 @@ const vdCheckUp = (event, action) => {
 
         event[action](
             `Vārda dienu šodien, ${date.full}, `
-            + `svin ${BOLD_CHAR + names.join(', ') + BOLD_CHAR}, `
-            + `kā arī ${extendedNames.join(', ')}.`
+            + `svin ${BOLD_CHAR + names.join(', ') + BOLD_CHAR}`
+            + (extendedNames.length > 0 ? `, kā arī ${extendedNames.join(', ')}.` : ``)
         )
     } else if (datePattern.test(param)) {
         let [input, day, month] = param.match(datePattern)
@@ -36,8 +36,8 @@ const vdCheckUp = (event, action) => {
 
         event[action](
             `Vārda dienu ${getFullDateName(month, day)} `
-            + `svin ${BOLD_CHAR + names.join(', ') + BOLD_CHAR}, `
-            + `kā arī ${extendedNames.join(', ')}.`
+            + `svin ${BOLD_CHAR + names.join(', ') + BOLD_CHAR}`
+            + (extendedNames.length > 0 ? `, kā arī ${extendedNames.join(', ')}.` : ``)
         )
     } else {
         const key = _.findKey(vdLib, s => s.indexOf(param) !== -1)
