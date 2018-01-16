@@ -57,6 +57,7 @@ class CommandsClass {
     } else {
       if (this.history[command]) {
         this.history[command](event);
+        return;
       }
       let commandSuccessful = this.handleCommandFromStorage(command, message, event);
       if (commandSuccessful && !ignoreStoring) {
