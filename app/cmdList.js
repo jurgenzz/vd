@@ -4,6 +4,7 @@ const { weatherCheck } = require('./actions/weatherCheck');
 const { crypto } = require('./actions/crypto');
 const { humanizeDelta } = require('./helpers');
 const { search } = require('./actions/search');
+const { count } = require('./actions/count');
 
 const cmdList = {
   '!ping': (message, event) => event.reply('pong!'),
@@ -25,7 +26,8 @@ const cmdList = {
   },
   '!crypto': (message, event) => crypto(message, event, false),
   '!coinbase': (message, event) => crypto(message, event, true),
-  '!search': search
+  '!search': search,
+  '!count': count
 };
 
 module.exports = { cmdList };
