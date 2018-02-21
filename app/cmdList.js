@@ -3,6 +3,7 @@ const { reminder } = require('./actions/reminder');
 const { weatherCheck } = require('./actions/weatherCheck');
 const { crypto } = require('./actions/crypto');
 const { humanizeDelta } = require('./helpers');
+const { search } = require('./actions/search');
 
 const cmdList = {
   '!ping': (message, event) => event.reply('pong!'),
@@ -23,7 +24,8 @@ const cmdList = {
     event.reply(timeUp);
   },
   '!crypto': (message, event) => crypto(message, event, false),
-  '!coinbase': (message, event) => crypto(message, event, true)
+  '!coinbase': (message, event) => crypto(message, event, true),
+  '!search': search
 };
 
 module.exports = { cmdList };
