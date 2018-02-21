@@ -114,7 +114,7 @@ class VdkClass {
     setInterval(() => {
       let currentDateTime = hypheniphyDate(new Date());
 
-      if (currentDateTime.indexOf('9-0-0') >= 0) {
+      if (currentDateTime.indexOf('8-0-0') >= 0) {
         if (!this.vdPrinted) {
           this.vdPrinted = true;
           if (channels[defaultChannel]) {

@@ -34,10 +34,10 @@ const reminder = (message, event) => {
     0
   );
 
-  if (seconds / DURATION_MAPPING['d'] > 50) {
-    event.reply(`Sorry ${nick}, memory limited to 50 days.`);
-    return;
-  }
+ // if (seconds / DURATION_MAPPING['d'] > 50) {
+//    event.reply(`Sorry ${nick}, memory limited to 50 days.`);
+  //  return;
+ // }
 
   let when = new Date(
     moment()
@@ -47,7 +47,12 @@ const reminder = (message, event) => {
   storeDate(hypheniphyDate(when), nick, message, channel);
 
   let after = _.join(humanizeDelta(seconds * 1000).split(' '), ', ');
-  event.reply(`A reminder has been set. Will remind you in ${after}`);
+	
+  if (seconds / DURATION_MAPPING['d'] > 50) {
+     event.reply(`A reminder has been set. Will try to remind you in ${after}.`)	
+  } else {	
+     event.reply(`A reminder has been set. Will remind you in ${after}`);
+  }
 };
 
 module.exports = {
