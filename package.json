@@ -10,7 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^0.17.1",
-    "irc-framework": "^2.6.1",
+    "irc-framework": "^2.11.0",
     "lodash": "^4.17.4",
     "moment": "^2.20.1",
     "node-storage": "0.0.7"
