@@ -18,4 +18,4 @@ const search = (message, event) => {
 
 module.exports = {
   search
-}
+};

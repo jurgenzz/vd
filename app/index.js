@@ -114,7 +114,9 @@ class VdkClass {
     setInterval(() => {
       let currentDateTime = hypheniphyDate(new Date());
 
-      if (currentDateTime.indexOf('8-0-0') >= 0) {
+      // print name days if time is either 8:00:00 or 18:00:00
+      let isEightOrEighteen = currentDateTime.match(/8-0-0$/)
+      if (isEightOrEighteen) {
         if (!this.vdPrinted) {
           this.vdPrinted = true;
           if (channels[defaultChannel]) {

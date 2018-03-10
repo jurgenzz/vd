@@ -16,24 +16,30 @@ const count = (message, event) => {
   if (requestInProgress) {
     return;
   }
-  
+
   requestInProgress = true;
 
   axios
     .get(url + encodeURIComponent(query))
     .then(res => {
-      
       const $ = cheerio.load(res.data);
-      
+
       // :(
       let count = $('#firstnames-search-results tbody > tr:nth-of-type(1) > td:nth-of-type(2)').text();
 
       if (count) {
-        event.reply(`PMLP izskaitīja, ka Latvijā ir reģistrēti ${count} cilvēki ar vārdu ${query}`);
+        let human = 'cilvēki';
+        let registered = 'reģistrēti';
+
+        if (count === '1') {
+          human = 'cilvēks';
+          registered = 'reģistrēts';
+        }
+        event.reply(`PMLP izskaitīja, ka Latvijā ir ${registered} ${count} ${human} ar vārdu ${query}`);
       } else {
-        event.reply(`PMPL saka, ka nav ar šādu vārdu neviens.`);
+        event.reply(`PMLP saka, ka nav ar šādu vārdu neviens.`);
       }
-      allowNextRequest();
+      requestInProgress = false;
     })
     .catch(err => {
       allowNextRequest();

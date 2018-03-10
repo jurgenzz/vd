@@ -13,8 +13,6 @@ const weatherCheck = (message, event) => {
   let msgArr = message.split(' ');
   let city = msgArr[1];
 
-  console.log(city);
-
   if (city && !weatherInProgress) {
     weatherInProgress = true;
 
@@ -35,7 +33,7 @@ const weatherCheck = (message, event) => {
           } m/s.`;
           event.reply(reply);
         }
-        clearWeather();
+        weatherInProgress = false;
       })
       .catch(err => {
         clearWeather();

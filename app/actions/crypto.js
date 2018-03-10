@@ -1,5 +1,11 @@
 const axios = require('axios');
 
+/**
+ * 
+ * @param {*} message 
+ * @param {*} event 
+ * @param {*} coinbase 
+ */
 const crypto = (message, event, coinbase) => {
   message = message.replace(/^!crypto |^!coinbase /, '');
   let currencies = message.split('/');
@@ -9,8 +15,9 @@ const crypto = (message, event, coinbase) => {
   if (from && to) {
     from = from.toUpperCase();
     to = to.toUpperCase();
-    // event.reply(currencies[0] + ' ' +  currencies[1] + `${coinbase}`);
-    //         https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=BTC,USD,EUR&e=Coinbase
+
+    // example API:
+    // https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=BTC,USD,EUR&e=Coinbase
     let url = `https://min-api.cryptocompare.com/data/price?fsym=${from}&tsyms=${to}`;
     if (coinbase) {
       url += '&e=Coinbase';
