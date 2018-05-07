@@ -6,14 +6,16 @@ const search = (message, event) => {
   let queries = msg.match(/(\w+:\w+)/g);
 
   if (queries && queries.length) {
-    queries.map(q => {
-      query += '&';
-      query += q.split(':').join('=');
-      msg = msg.replace(q, '');
+    queries.forEach(q => {
+      const [k, , v] = q.split(':');
+      if (!v) {
+        return;
+      }
+      query += `&${k}=${encodeURIComponent(v)}`;
     });
   }
 
-  event.reply('https://developers.lv/?search&text=' + encodeURIComponent(msg) + query);
+  event.reply('https://developers.lv/?search' + query);
 };
 
 module.exports = {
