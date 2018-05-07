@@ -7,7 +7,7 @@ const search = (message, event) => {
 
   if (queries && queries.length) {
     queries.forEach(q => {
-      const [k, , v] = q.split(':');
+      const [k, v] = q.split(':');
       if (!v) {
         return;
       }
