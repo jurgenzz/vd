@@ -16,7 +16,7 @@ const search = (message, event) => {
     });
   }
 
-  event.reply(`https://developers.lv/?search${msg ? `&text=${msg}` : ''}${query}`);
+  event.reply(`https://developers.lv/?search${msg ? `&text=${encodeURIComponent(msg)}` : ''}${query}`);
 };
 
 module.exports = {
