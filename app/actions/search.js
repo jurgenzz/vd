@@ -12,10 +12,11 @@ const search = (message, event) => {
         return;
       }
       query += `&${k}=${encodeURIComponent(v)}`;
+      msg = msg.replace(q, '');
     });
   }
 
-  event.reply('https://developers.lv/?search' + query);
+  event.reply(`https://developers.lv/?search${msg ? `&text=${msg}` : ''}${query}`);
 };
 
 module.exports = {
