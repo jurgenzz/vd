@@ -27,17 +27,21 @@ const count = (message, event) => {
       // :(
       let count = $('#firstnames-search-results tbody > tr:nth-of-type(1) > td:nth-of-type(2)').text();
       let rows = $('#firstnames-search-results tbody > tr');
-      let responseText = []
+      let responseText = [];
       if (rows.length) {
-
-        for (let i = 0; i < 3; i ++) {
+        for (let i = 0; i < 3; i++) {
           let currentRow = rows[i];
           let tds = $(currentRow).find('td');
 
           let name = $(tds[0]).text();
           let cnt = $(tds[1]).text();
           if (name && cnt) {
-            responseText.push(`${name}[${cnt}]`)
+            name = name
+              .toLowerCase()
+              .split(' ')
+              .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+              .join(' ');
+            responseText.push(`${name}[${cnt}]`);
           }
         }
       }
@@ -50,7 +54,7 @@ const count = (message, event) => {
           human = 'cilvēks';
           registered = 'reģistrēts';
         }
-        event.reply(`PMPL stāsta, ka Latvijā ir apmēram šādi - ${responseText.join(', ')}.`)
+        event.reply(`PMPL stāsta, ka Latvijā ir apmēram šādi - ${responseText.join(', ')}.`);
         // event.reply(`PMLP izskaitīja, ka Latvijā ir ${registered} ${count} ${human} ar vārdu ${query}`);
       } else {
         event.reply(`PMLP saka, ka nav ar šādu vārdu neviens.`);
