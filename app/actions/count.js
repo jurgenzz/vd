@@ -11,16 +11,18 @@ const allowNextRequest = () => {
 
 const count = (message, event) => {
   let query = message.replace(/!count /, '');
-  let url = 'http://www.pmlp.gov.lv/lv/sakums/statistika/personvardu-datu-baze/?id=137&query=';
+  query = encodeURIComponent(query);
+  let url = 'http://www.pmlp.gov.lv/lv/sakums/statistika/personvardu-datu-baze/?id=137&query=' + query;
 
   if (requestInProgress) {
     return;
   }
 
+  
   requestInProgress = true;
 
   axios
-    .get(url + encodeURIComponent(query))
+    .get(url)
     .then(res => {
       const $ = cheerio.load(res.data);
 
@@ -54,7 +56,7 @@ const count = (message, event) => {
           human = 'cilvēks';
           registered = 'reģistrēts';
         }
-        event.reply(`PMPL stāsta, ka Latvijā ir apmēram šādi - ${responseText.join(', ')}.`);
+        event.reply(`PMPL stāsta, ka Latvijā ir apmēram šādi - ${responseText.join(', ')}. http://vd.jurg.is/n?q=${query}`);
         // event.reply(`PMLP izskaitīja, ka Latvijā ir ${registered} ${count} ${human} ar vārdu ${query}`);
       } else {
         event.reply(`PMLP saka, ka nav ar šādu vārdu neviens.`);
