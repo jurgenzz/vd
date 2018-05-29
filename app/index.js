@@ -98,7 +98,7 @@ class VdkClass {
       message = message.replace(nickPattern, '!');
     }
 
-    let isCommand = message.match(/^!\w+/);
+    let isCommand = message.match(/(^\w{2}>)|(^!\w+)/);
 
     if (!isCommand || !isCommand[0]) {
       return;

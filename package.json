@@ -10,10 +10,12 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^0.17.1",
+    "cheerio": "^1.0.0-rc.2",
     "irc-framework": "^2.9.1",
     "lodash": "^4.17.4",
     "moment": "^2.20.1",
-    "node-storage": "0.0.7"
+    "node-storage": "0.0.7",
+    "sandbox": "^0.8.6"
   },
   "prettier": {
     "singleQuote": true,
