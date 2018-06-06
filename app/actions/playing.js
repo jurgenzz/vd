@@ -3,6 +3,7 @@ const axios = require('axios');
 
 
 let config = {};
+let users = {};
 
 try {
   config = require('../../../vdk-ui/config.json');
@@ -11,13 +12,23 @@ try {
 }
 
 const playing = (message, event) => {
+
+  message = message.replace(/^!playing ?/, '');
+  let nick = message || event.nick;
   try {
     users = require('./../../../tokens.json');
   } catch (err) {
     // err
-    reminders = {};
+    console.log(err)
+    users = {};
   }
-  let { access_token, refresh_token } = users[event.nick];
+  console.log(users);
+  console.log(nick);
+  console.log(users[nick]);
+  if (!users[nick]) {
+    return;
+  }
+  let { access_token, refresh_token } = users[nick];
 
   if (!access_token || !refresh_token) {
     return;
@@ -34,7 +45,7 @@ const playing = (message, event) => {
       })
       .then(res => {
         if (res && res.data && res.data.is_playing) {
-          event.reply(res.data.item.name + ' - ' + res.data.item.artists.map(a => a.name).join(', ') + '.');
+          event.reply(res.data.item.artists.map(a => a.name).join(', ') + ' — ' + res.data.item.name + '.');
         }
       })
       .catch(err => {
@@ -53,8 +64,8 @@ const playing = (message, event) => {
           }
         })
           .then(res => {
-            users[event.nick] = users[event.nick] || {};
-            users[event.nick]["access_token"] = res.data.access_token;
+            users[nick] = users[nick] || {};
+            users[nick]["access_token"] = res.data.access_token;
             
             fs.writeFile('./../../../tokens.json', JSON.stringify(users), err => {
               getLastSong(res.data.access_token);
