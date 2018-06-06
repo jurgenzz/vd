@@ -19,12 +19,9 @@ const playing = (message, event) => {
     users = require('./../../../tokens.json');
   } catch (err) {
     // err
-    console.log(err)
+   
     users = {};
   }
-  console.log(users);
-  console.log(nick);
-  console.log(users[nick]);
   if (!users[nick]) {
     return;
   }
@@ -45,7 +42,7 @@ const playing = (message, event) => {
       })
       .then(res => {
         if (res && res.data && res.data.is_playing) {
-          event.reply(res.data.item.artists.map(a => a.name).join(', ') + ' — ' + res.data.item.name + '.');
+          event.reply(res.data.item.artists.map(a => a.name).join(', ') + ' — ' + res.data.item.name);
         }
       })
       .catch(err => {
