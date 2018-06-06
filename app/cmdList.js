@@ -6,6 +6,7 @@ const { humanizeDelta } = require('./helpers');
 const { search } = require('./actions/search');
 const { count } = require('./actions/count');
 const { jsExec } = require('./actions/jsExec');
+const { playing } = require('./actions/playing');
 
 const cmdList = {
   '!ping': (message, event) => event.reply('pong!'),
@@ -29,7 +30,8 @@ const cmdList = {
   '!coinbase': (message, event) => crypto(message, event, true),
   '!search': search,
   '!count': count,
-  'js>': jsExec
+  '!playing': playing,
+  '!auth': (_, event) => event.reply('https://accounts.spotify.com/authorize?response_type=code&client_id=be947c6cf75b4e5c9f043ca9d01d3548&scope=user-read-currently-playing&redirect_uri=http%3A%2F%2Fjurg.lv%2Fspotify&state=' + event.nick)
 };
 
 module.exports = { cmdList };
