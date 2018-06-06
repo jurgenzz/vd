@@ -1,6 +1,15 @@
 const fs = require('fs');
 const axios = require('axios');
 
+
+let config = {};
+
+try {
+  config = require('../../../vdk-ui/config.json');
+} catch (err) {
+  //
+}
+
 const playing = (message, event) => {
   try {
     users = require('./../../../tokens.json');
@@ -10,7 +19,13 @@ const playing = (message, event) => {
   }
   let { access_token, refresh_token } = users[event.nick];
 
+  if (!access_token || !refresh_token) {
+    return;
+  }
   const getLastSong = token => {
+    if (!token) {
+      return;
+    }
     axios
       .get('https://api.spotify.com/v1/me/player/currently-playing', {
         headers: {
@@ -29,24 +44,29 @@ const playing = (message, event) => {
           method: 'post',
           params: {
             grant_type: 'refresh_token',
-            refresh_token: refresh_token
+            refresh_token: refresh_token,
+            client_id: config.client_id,
+            client_secret: config.client_secret
           },
           headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
+            'Content-Type': 'application/x-www-form-urlencoded'
           }
-        }).then(res => {
-          users[user] = {
-            access_token: res.data.access_token,
-          };
-          fs.writeFile("./../../../tokens.json", JSON.stringify(users), err => {
-            getLastSong(res.data.access_token)
-          })
-
         })
+          .then(res => {
+            users[event.nick] = users[event.nick] || {};
+            users[event.nick]["access_token"] = res.data.access_token;
+            
+            fs.writeFile('./../../../tokens.json', JSON.stringify(users), err => {
+              getLastSong(res.data.access_token);
+            });
+          })
+          .catch(err => {
+            //
+          });
       });
   };
 
-  getLastSong(access_token)
+  getLastSong(access_token);
 };
 
 module.exports = {
