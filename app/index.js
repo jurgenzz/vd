@@ -36,6 +36,12 @@ class VdkClass {
     return this.uptime;
   }
 
+  say(nick, msg) {
+    if (this.client) {
+      this.client.say(nick, msg);
+    }
+  }
+
   /**
    *
    * @param {Array} channels

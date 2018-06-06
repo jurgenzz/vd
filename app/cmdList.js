@@ -31,7 +31,7 @@ const cmdList = {
   '!search': search,
   '!count': count,
   '!playing': playing,
-  '!auth': (_, event) => event.reply('http://vd.jurg.is/auth?q=' + event.nick)
+  '!spotify': (_, event, vdk) => vdk.say(event.nick, 'http://vd.jurg.is/auth?q=' + event.nick)
 };
 
 module.exports = { cmdList };
