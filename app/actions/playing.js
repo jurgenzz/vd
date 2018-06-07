@@ -3,7 +3,7 @@ const axios = require('axios');
 
 
 let config = {};
-let users = {};
+//let users = {};
 
 try {
   config = require('../../../vdk-ui/config.json');
@@ -13,6 +13,7 @@ try {
 
 const playing = (message, event) => {
 
+  let users = {};
   message = message.replace(/^!playing ?/, '');
   let nick = message || event.nick;
   try {
@@ -20,7 +21,7 @@ const playing = (message, event) => {
   } catch (err) {
     // err
    
-    users = {};
+    // users = {};
   }
   if (!users[nick]) {
     return;
