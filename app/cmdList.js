@@ -31,6 +31,7 @@ const cmdList = {
   '!search': search,
   '!count': count,
   '!playing': playing,
+  '!np': playing,
   '!spotify': (_, event, vdk) => vdk.say(event.nick, 'http://vd.jurg.is/auth?q=' + event.nick)
 };
 

@@ -14,7 +14,7 @@ try {
 const playing = (message, event) => {
 
   let users = {};
-  message = message.replace(/^!playing ?/, '');
+  message = message.replace(/^!playing ?|^!np ?/, '');
   let nick = message || event.nick;
   try {
     users = require('./../../../tokens.json');
@@ -43,7 +43,7 @@ const playing = (message, event) => {
       })
       .then(res => {
         if (res && res.data && res.data.is_playing) {
-          event.reply(res.data.item.artists.map(a => a.name).join(', ') + ' — ' + res.data.item.name + ' [' + res.data.item.album.name + '] ');
+          event.reply('🎵 ' + res.data.item.artists.map(a => a.name).join(', ') + ' — ' + res.data.item.name + ' [' + res.data.item.album.name + '] ');
         }
       })
       .catch(err => {

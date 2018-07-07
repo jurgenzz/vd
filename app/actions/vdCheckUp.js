@@ -17,8 +17,8 @@ const vdCheckUp = (message, event, action = 'reply') => {
 
     event[action](
       `Vārda dienu šodien, ${date.full}, ` +
-        `svin ${BOLD_CHAR + names.join(', ') + BOLD_CHAR}, ` +
-        (extendedNames.length > 0 ? `kā arī ${extendedNames.join(', ')}.` : '')
+        `svin ${BOLD_CHAR + names.join(', ') + BOLD_CHAR}` +
+        (extendedNames && extendedNames.length > 0 ? `, kā arī ${extendedNames.join(', ')}.` : '.')
     );
   } else if (datePattern.test(param)) {
     let [input, day, month] = param.match(datePattern);
