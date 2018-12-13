@@ -43,7 +43,7 @@ const playing = (message, event) => {
       })
       .then(res => {
         if (res && res.data && res.data.is_playing) {
-          event.reply('🎵 ' + res.data.item.artists.map(a => a.name).join(', ') + ' — ' + res.data.item.name + ' [' + res.data.item.album.name + '] ');
+          event.reply('🎵 ' + res.data.item.artists.map(a => a.name).join(', ') + ' — ' + res.data.item.name + ' [' + res.data.item.album.name + '] | ' + res.data.item.external_urls.spotify);
         }
       })
       .catch(err => {
