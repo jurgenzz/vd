@@ -1,7 +1,7 @@
 const search = (message, event) => {
   let query = '';
 
-  let msg = message.replace(/!search /, ''); // remove command itself
+  let msg = message.replace(/!search ?/, ''); // remove command itself
 
   let queries = msg.match(/(\w+:\w+)/g);
 
