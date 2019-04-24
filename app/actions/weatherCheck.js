@@ -28,7 +28,7 @@ const weatherCheck = (message, event) => {
           let weatherDescription = res.data.list[0].weather[0];
           let reply = `Weather in ${city}: ${
             weatherDescription.description
-          }, Temperature: ${weatherInfo.main.temp}℃ , wind: ${
+          }, Temperature: ${weatherInfo.main.temp}℃, wind: ${
             weatherInfo.wind.speed
           } m/s.`;
           event.reply(reply);
