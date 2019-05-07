@@ -34,7 +34,6 @@ const getDate = () => {
 
 const DURATION_MAPPING = {
     y: 60 * 60 * 24 * 365,
-    w: 60 * 60 * 24 * 7,
     d: 60 * 60 * 24,
     h: 60 * 60,
     m: 60,
